@@ -35,7 +35,7 @@ namespace eddyserver
 		}
 
         /**
-         * 投递消息列表到主线程操作
+         * 投递消息列表到线程操作
          */
 		void PackMessageList(SessionHandlePointer session_handle_ptr)
 		{
@@ -100,7 +100,7 @@ namespace eddyserver
 			return;
 		}
 
-        //session_handler_stuff::PackMessageList(shared_from_this());
+        session_handler_stuff::PackMessageList(shared_from_this());
 
 		ThreadPointer thread_ptr = get_thread_manager()->get_thread(thread_id_);
 		if (thread_ptr != nullptr)

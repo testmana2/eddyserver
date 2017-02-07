@@ -89,6 +89,11 @@ namespace eddyserver
          */
         void hanlde_close();
 
+        /**
+         * 处理安全关闭
+         */
+        void handle_safe_close(asio::error_code error_code, size_t bytes_transferred);
+
     private:
         TCPSession(const TCPSession&) = delete;
         TCPSession& operator= (const TCPSession&) = delete;
@@ -100,6 +105,7 @@ namespace eddyserver
         TCPSessionID                session_id_;
         SocketType                  socket_;
         ThreadPointer               io_thread_;
+        asio::steady_timer          close_timer_;
         MessageFilterPointer        msg_filter_;
         TimePoint                   last_activity_time_;
         std::vector<uint8_t>        buffer_receiving_;

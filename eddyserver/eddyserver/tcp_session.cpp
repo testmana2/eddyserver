@@ -69,6 +69,7 @@ namespace eddyserver
         , num_write_handlers_(0)
         , socket_(td->get_io_service())
         , keep_alive_time_(keep_alive_time)
+        , close_timer_(td->get_io_service())
     {
     }
 
@@ -101,9 +102,9 @@ namespace eddyserver
         }
         else
         {
- /*           buffer_receiving_.resize(bytes_wanna_read);
+            buffer_receiving_.resize(bytes_wanna_read);
             asio::async_read(socket_, asio::buffer(buffer_receiving_.data(), bytes_wanna_read),
-                std::bind(&TCPSession::handle_read, shared_from_this(), std::placeholders::_1, std::placeholders::_2));*/
+                std::bind(&TCPSession::handle_read, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
         }
     }
 
@@ -126,9 +127,21 @@ namespace eddyserver
             {
                 std::cerr << error_code.message() << std::endl;
             }
-
-            socket_.close();
             io_thread_->get_session_queue().remove(get_id());
+
+            buffer_receiving_.resize(Buffer::kDynamicThreshold);
+            socket_.async_read_some(asio::buffer(buffer_receiving_.data(), buffer_receiving_.size()),
+                std::bind(&TCPSession::handle_safe_close, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+
+            close_timer_.expires_from_now(std::chrono::seconds(5));
+            close_timer_.async_wait([=](asio::error_code error)
+            {
+                if (error != asio::error::operation_aborted)
+                {
+                    socket_.cancel();
+                    socket_.close();
+                }
+            });
         }
     }
 
@@ -143,15 +156,23 @@ namespace eddyserver
         hanlde_close();
     }
 
+    // 检查Session存活
+    bool TCPSession::check_keep_alive()
+    {
+        if (keep_alive_time_.count() == 0)
+        {
+            return true;
+        }
+        return std::chrono::steady_clock::now() - last_activity_time_ < keep_alive_time_;
+    }
+
     // 投递消息列表
     void TCPSession::post_message_list(const std::vector<Buffer> &messages)
     {
-        if (closed_)
+        if (closed_ || messages.empty())
         {
             return;
         }
-
-        assert(!messages.empty());
 
         size_t bytes_wanna_write = msg_filter_->bytes_wanna_write(messages);
         if (bytes_wanna_write == 0)
@@ -255,13 +276,22 @@ namespace eddyserver
             std::bind(&TCPSession::hanlde_write, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
     }
 
-    // 检查Session存活
-    bool TCPSession::check_keep_alive()
+    // 处理安全关闭
+    void TCPSession::handle_safe_close(asio::error_code error_code, size_t bytes_transferred)
     {
-        if (keep_alive_time_.count() == 0)
-        {
-            return true;
+        if (bytes_transferred == 0)
+        {        
+            if (error_code != asio::error::operation_aborted)
+            {
+                close_timer_.cancel();
+                socket_.close();
+            }        
         }
-        return std::chrono::steady_clock::now() - last_activity_time_ < keep_alive_time_;
+        else
+        {
+            buffer_receiving_.resize(Buffer::kDynamicThreshold);
+            socket_.async_read_some(asio::buffer(buffer_receiving_.data(), buffer_receiving_.size()),
+                std::bind(&TCPSession::handle_safe_close, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+        }
     }
 }
