@@ -19,6 +19,7 @@ namespace eddyserver
         , acceptor_(io_thread_manager.get_main_thread()->get_io_service(), endpoint)
     {
         MessageFilterPointer filter_ptr = message_filter_creator_();
+        acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(true));
         SessionPointer session_ptr = std::make_shared<TCPSession>(io_thread_manager_.get_min_load_thread(), filter_ptr, keep_alive_time_);
         acceptor_.async_accept(session_ptr->get_socket(), std::bind(&TCPServer::handle_accept, this, session_ptr, std::placeholders::_1));
     }
