@@ -75,7 +75,10 @@ namespace eddyserver
 	}
 
     // 初始化
-	void TCPSessionHandler::init(TCPSessionID sid, IOThreadID tid, IOServiceThreadManager *manager, const asio::ip::tcp::endpoint &remote_endpoint)
+	void TCPSessionHandler::init(TCPSessionID sid,
+        IOThreadID tid,
+        IOServiceThreadManager *manager,
+        const asio::ip::tcp::endpoint &remote_endpoint)
 	{
 		thread_id_ = tid;
 		session_id_ = sid;
@@ -97,7 +100,7 @@ namespace eddyserver
 			return;
 		}
 
-        session_handler_stuff::PackMessageList(shared_from_this());
+        //session_handler_stuff::PackMessageList(shared_from_this());
 
 		ThreadPointer thread_ptr = get_thread_manager()->get_thread(thread_id_);
 		if (thread_ptr != nullptr)

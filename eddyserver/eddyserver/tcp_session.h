@@ -71,7 +71,7 @@ namespace eddyserver
         /**
          * 检查Session存活
          */
-        bool check_keep_alive_time();
+        bool check_keep_alive();
 
     private:
         /**

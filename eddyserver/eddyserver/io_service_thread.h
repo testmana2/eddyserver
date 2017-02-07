@@ -87,7 +87,7 @@ namespace eddyserver
         /**
          * 检查Session存活
          */
-        void check_keep_alive_time(asio::error_code error_code);
+        void check_keep_alive(asio::error_code error_code);
 
     private:
         IOServiceThread(const IOServiceThread&) = delete;

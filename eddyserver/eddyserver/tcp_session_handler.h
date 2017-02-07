@@ -103,7 +103,10 @@ namespace eddyserver
         /**
          * 初始化
          */
-        void init(TCPSessionID sid, IOThreadID tid, IOServiceThreadManager *manager, const asio::ip::tcp::endpoint &remote_endpoint);
+        void init(TCPSessionID sid,
+            IOThreadID tid,
+            IOServiceThreadManager *manager,
+            const asio::ip::tcp::endpoint &remote_endpoint);
 
     private:
         TCPSessionHandler(const TCPSessionHandler&) = delete;

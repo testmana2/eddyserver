@@ -10,7 +10,7 @@ namespace eddyserver
         : td_id_(id)
         , timer_(io_service_)
         , td_manager_(td_manager)
-        , wait_handler_(std::bind(&IOServiceThread::check_keep_alive_time, this, std::placeholders::_1))
+        , wait_handler_(std::bind(&IOServiceThread::check_keep_alive, this, std::placeholders::_1))
     {
     }
 
@@ -62,7 +62,7 @@ namespace eddyserver
     }
 
     // 检查Session存活
-    void IOServiceThread::check_keep_alive_time(asio::error_code error_code)
+    void IOServiceThread::check_keep_alive(asio::error_code error_code)
     {
         if (error_code)
         {
@@ -72,7 +72,10 @@ namespace eddyserver
         {
             session_queue_.foreach([=](const SessionPointer &session)
             {
-                io_service_.post(std::bind(&TCPSession::close, session));
+                if (!session->check_keep_alive())
+                {
+                    io_service_.post(std::bind(&TCPSession::close, session));
+                }
             });
             timer_.expires_from_now(std::chrono::seconds(1));
             timer_.async_wait(wait_handler_);

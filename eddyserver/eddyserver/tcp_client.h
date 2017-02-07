@@ -19,23 +19,28 @@ namespace eddyserver
         /**
          * 发起连接请求
          */
-        void connect(asio::ip::tcp::endpoint &endpoint, asio::error_code &error_code);
+        void connect(asio::ip::tcp::endpoint &endpoint,
+            asio::error_code &error_code);
 
         /**
          * 发起异步连接请求
          */
-        void async_connect(asio::ip::tcp::endpoint &endpoint, const std::function<void(asio::error_code)> &cb);
+        void async_connect(asio::ip::tcp::endpoint &endpoint,
+            const std::function<void(asio::error_code)> &cb);
 
     private:
         /**
          * 处理连接结果
          */
-        void handle_connect(SessionPointer session_ptr, asio::error_code error_code);
+        void handle_connect(SessionPointer session_ptr,
+            asio::error_code error_code);
 
         /**
          * 异步连接结果
          */
-        void handle_async_connect(SessionPointer session_ptr, std::function<void(asio::error_code)> cb, asio::error_code error_code);
+        void handle_async_connect(SessionPointer session_ptr,
+            std::function<void(asio::error_code)> cb,
+            asio::error_code error_code);
 
     private:
         TCPClient(const TCPClient&) = delete;

@@ -101,9 +101,9 @@ namespace eddyserver
         }
         else
         {
-            buffer_receiving_.resize(bytes_wanna_read);
+ /*           buffer_receiving_.resize(bytes_wanna_read);
             asio::async_read(socket_, asio::buffer(buffer_receiving_.data(), bytes_wanna_read),
-                std::bind(&TCPSession::handle_read, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+                std::bind(&TCPSession::handle_read, shared_from_this(), std::placeholders::_1, std::placeholders::_2));*/
         }
     }
 
@@ -121,7 +121,7 @@ namespace eddyserver
                 std::bind(&IOServiceThreadManager::on_session_close, &io_thread_->get_thread_manager(), get_id()));
 
             asio::error_code error_code;
-            socket_.shutdown(asio::ip::tcp::socket::shutdown_both, error_code);
+            socket_.shutdown(asio::ip::tcp::socket::shutdown_send, error_code);
             if (error_code && error_code != asio::error::not_connected)
             {
                 std::cerr << error_code.message() << std::endl;
@@ -256,7 +256,7 @@ namespace eddyserver
     }
 
     // 检查Session存活
-    bool TCPSession::check_keep_alive_time()
+    bool TCPSession::check_keep_alive()
     {
         if (keep_alive_time_.count() == 0)
         {
