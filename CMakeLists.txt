@@ -10,22 +10,20 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 编译选项
-if (Linux)
-  set(CMAKE_CXX_FLAGS
-    -g
-    -Wall
-    -Wextra
-    -Werror
-    -Wconversion
-    -Wno-unused-parameter
-    -Wold-style-cast
-    -Woverloaded-virtual
-    -Wpointer-arith
-    -Wshadow
-    -Wwrite-strings
-    -std=c++1y
-  )
-endif()
+set(CMAKE_CXX_FLAGS
+  -g
+  -Wall
+  -Wextra
+  -Werror
+  -Wconversion
+  -Wno-unused-parameter
+  -Wold-style-cast
+  -Woverloaded-virtual
+  -Wpointer-arith
+  -Wshadow
+  -Wwrite-strings
+  -std=c++1y
+)
 
 # 输出目录
 set(BINARY_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
