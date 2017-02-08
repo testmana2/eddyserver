@@ -2,7 +2,7 @@
 #define __TCP_SESSION_QUEUE_H__
 
 #include <unordered_map>
-#include "eddy_types.h"
+#include "eddytypes.h"
 
 namespace eddyserver
 {

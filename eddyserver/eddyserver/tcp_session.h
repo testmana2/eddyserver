@@ -3,8 +3,8 @@
 
 #include <chrono>
 #include <asio/ip/tcp.hpp>
-#include "buffer.h"
-#include "eddy_types.h"
+#include "eddytypes.h"
+#include "net_message.h"
 
 namespace eddyserver
 {
@@ -47,7 +47,7 @@ namespace eddyserver
         /**
          * 获取收到的消息列表
          */
-        std::vector<Buffer>& get_messages_received()
+        std::vector<NetMessage>& get_messages_received()
         {
             return messages_received_;
         }
@@ -55,7 +55,7 @@ namespace eddyserver
         /**
          * 投递消息列表
          */
-        void post_message_list(const std::vector<Buffer> &messages);
+        void post_message_list(const std::vector<NetMessage> &messages);
 
         /**
          * 关闭Session

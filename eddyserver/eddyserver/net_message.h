@@ -10,24 +10,24 @@
 
 namespace eddyserver
 {
-    class Buffer
+    class NetMessage
     {
         typedef std::vector<uint8_t> DynamicVector;
 
     public:
         /* 动态临界值 */
         static const size_t kDynamicThreshold = 128;
-        static_assert(Buffer::kDynamicThreshold >= 0, "kDynamicThreshold must be greater than 0");
+        static_assert(NetMessage::kDynamicThreshold >= 0, "kDynamicThreshold must be greater than 0");
 
     public:
-        Buffer();
+        NetMessage();
 
         /**
          * 构造函数
          * 预先分配内存
          * @param size 内存大小
          */
-        explicit Buffer(size_t size);
+        explicit NetMessage(size_t size);
 
         /**
          * 构造函数
@@ -35,28 +35,28 @@ namespace eddyserver
          * @param data 数据地址
          * @param size 数据大小
          */
-        Buffer(const char *data, size_t size);
+        NetMessage(const char *data, size_t size);
 
         /**
          * 拷贝构造函数
          */
-        Buffer(const Buffer &other);
+        NetMessage(const NetMessage &other);
 
         /**
          * 移动构造函数
          */
-        Buffer(Buffer &&other);
+        NetMessage(NetMessage &&other);
 
         /**
          * 重载赋值运算符
          */
-        Buffer& operator= (Buffer &&rhs);
-        Buffer& operator= (const Buffer &rhs);
+        NetMessage& operator= (NetMessage &&rhs);
+        NetMessage& operator= (const NetMessage &rhs);
 
         /**
          * 交换数据
          */
-        void swap(Buffer &other);
+        void swap(NetMessage &other);
 
     public:
         /**
@@ -228,7 +228,7 @@ namespace eddyserver
         uint8_t                         static_data_[kDynamicThreshold];
     };
 
-    typedef std::vector<Buffer> NetMessageVector;
+    typedef std::vector<NetMessage> NetMessageVector;
 }
 
 #endif

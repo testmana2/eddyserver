@@ -8,7 +8,7 @@
 
 namespace eddyserver
 {
-    class Buffer;
+    class NetMessage;
 
     /**
      * 消息过滤器接口
@@ -40,7 +40,7 @@ namespace eddyserver
          * 获取欲写入数据大小
          * @param messages_to_be_sent 将被发送的消息列表
          */
-        virtual size_t bytes_wanna_write(const std::vector<Buffer> &messages_to_be_sent) = 0;
+        virtual size_t bytes_wanna_write(const std::vector<NetMessage> &messages_to_be_sent) = 0;
 
         /**
          * 读取数据
@@ -49,7 +49,7 @@ namespace eddyserver
          * @param messages_received 读取的消息列表
          * @return 读取字节数
          */
-        virtual size_t read(const ByteArrray &buffer, std::vector<Buffer> &messages_received) = 0;
+        virtual size_t read(const ByteArrray &buffer, std::vector<NetMessage> &messages_received) = 0;
 
         /**
          * 写入数据
@@ -58,7 +58,7 @@ namespace eddyserver
          * @param &buffer 缓存区
          * @return 写入字节数
          */
-        virtual size_t write(const std::vector<Buffer> &messages_to_be_sent, ByteArrray &buffer) = 0;
+        virtual size_t write(const std::vector<NetMessage> &messages_to_be_sent, ByteArrray &buffer) = 0;
 
     private:
         MessageFilterInterface(const MessageFilterInterface&) = delete;
@@ -87,7 +87,7 @@ namespace eddyserver
          * 获取欲写入数据大小
          * @param messages_to_be_sent 将被发送的消息列表
          */
-        virtual size_t bytes_wanna_write(const std::vector<Buffer> &messages_to_be_sent);
+        virtual size_t bytes_wanna_write(const std::vector<NetMessage> &messages_to_be_sent);
 
         /**
          * 读取数据
@@ -96,7 +96,7 @@ namespace eddyserver
          * @param messages_received 读取的消息列表
          * @return 读取字节数
          */
-        virtual size_t read(const ByteArrray &buffer, std::vector<Buffer> &messages_received);
+        virtual size_t read(const ByteArrray &buffer, std::vector<NetMessage> &messages_received);
 
         /**
          * 写入数据
@@ -105,7 +105,7 @@ namespace eddyserver
          * @param &buffer 缓存区
          * @return 写入字节数
          */
-        virtual size_t write(const std::vector<Buffer> &messages_to_be_sent, ByteArrray &buffer);
+        virtual size_t write(const std::vector<NetMessage> &messages_to_be_sent, ByteArrray &buffer);
 
     private:
         MessageHeader		header_;

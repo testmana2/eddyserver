@@ -1,15 +1,15 @@
-﻿#include "buffer.h"
+﻿#include "net_message.h"
 
 namespace eddyserver
 {
-    Buffer::Buffer()
+    NetMessage::NetMessage()
         : reader_pos_(0)
         , writer_pos_(0)
         , is_dynmic_(false)
     {
     }
 
-    Buffer::Buffer(size_t size)
+    NetMessage::NetMessage(size_t size)
         : reader_pos_(0)
         , writer_pos_(0)
         , is_dynmic_(false)
@@ -17,7 +17,7 @@ namespace eddyserver
         ensure_writable_bytes(size);
     }
 
-    Buffer::Buffer(const char *data, size_t size)
+    NetMessage::NetMessage(const char *data, size_t size)
         : reader_pos_(0)
         , writer_pos_(0)
         , is_dynmic_(false)
@@ -25,7 +25,7 @@ namespace eddyserver
         write(data, size);
     }
 
-    Buffer::Buffer(const Buffer &other)
+    NetMessage::NetMessage(const NetMessage &other)
         : is_dynmic_(other.is_dynmic())
         , reader_pos_(other.reader_pos_)
         , writer_pos_(other.writer_pos_)
@@ -41,7 +41,7 @@ namespace eddyserver
         }
     }
 
-    Buffer::Buffer(Buffer &&other)
+    NetMessage::NetMessage(NetMessage &&other)
         : is_dynmic_(other.is_dynmic_)
         , reader_pos_(other.reader_pos_)
         , writer_pos_(other.writer_pos_)
@@ -60,7 +60,7 @@ namespace eddyserver
         other.is_dynmic_ = false;
     }
 
-    Buffer& Buffer::operator= (Buffer &&rhs)
+    NetMessage& NetMessage::operator= (NetMessage &&rhs)
     {
         if (std::addressof(rhs) != this)
         {
@@ -83,7 +83,7 @@ namespace eddyserver
         return *this;
     }
 
-    Buffer& Buffer::operator= (const Buffer &rhs)
+    NetMessage& NetMessage::operator= (const NetMessage &rhs)
     {
         if (std::addressof(rhs) != this)
         {
@@ -107,7 +107,7 @@ namespace eddyserver
     }
 
     // 交换数据
-    void Buffer::swap(Buffer &other)
+    void NetMessage::swap(NetMessage &other)
     {
         if (std::addressof(other) != this)
         {
@@ -120,7 +120,7 @@ namespace eddyserver
     }
 
     // 清空
-    void Buffer::clear()
+    void NetMessage::clear()
     {
         reader_pos_ = 0;
         writer_pos_ = 0;
@@ -131,7 +131,7 @@ namespace eddyserver
     }
 
     // 设为动态数组
-    void Buffer::set_dynamic()
+    void NetMessage::set_dynamic()
     {
         assert(!is_dynmic());
         if (!is_dynmic())
@@ -147,7 +147,7 @@ namespace eddyserver
     }
 
     // 设置容量大小
-    void Buffer::reserve(size_t size)
+    void NetMessage::reserve(size_t size)
     {
         if (!is_dynmic())
         {
@@ -161,14 +161,14 @@ namespace eddyserver
     }
 
     // 获取全部
-    void Buffer::retrieve_all()
+    void NetMessage::retrieve_all()
     {
         reader_pos_ = 0;
         writer_pos_ = 0;
     }
 
     // 获取数据
-    void Buffer::retrieve(size_t size)
+    void NetMessage::retrieve(size_t size)
     {
         assert(readable() >= size);
         if (readable() > size)
@@ -182,14 +182,14 @@ namespace eddyserver
     }
 
     // 写入数据大小
-    void Buffer::has_written(size_t size)
+    void NetMessage::has_written(size_t size)
     {
         assert(writeable() >= size);
         writer_pos_ += size;
     }
 
     // 分配空间
-    void Buffer::make_space(size_t size)
+    void NetMessage::make_space(size_t size)
     {
         if (writeable() + prependable() < size)
         {
@@ -218,7 +218,7 @@ namespace eddyserver
     }
 
     // 确保可写字节
-    void Buffer::ensure_writable_bytes(size_t size)
+    void NetMessage::ensure_writable_bytes(size_t size)
     {
         if (writeable() < size)
         {
@@ -228,7 +228,7 @@ namespace eddyserver
     }
 
     // 读取字符串
-    std::string Buffer::read_string()
+    std::string NetMessage::read_string()
     {
         assert(readable() > 0);
         const uint8_t *eos = data();
@@ -245,7 +245,7 @@ namespace eddyserver
         return value;
     }
 
-    void Buffer::read_string(std::string *out_value)
+    void NetMessage::read_string(std::string *out_value)
     {
         assert(readable() > 0);
         const uint8_t *eos = data();
@@ -263,7 +263,7 @@ namespace eddyserver
     }
 
     // 读取长度和字符串
-    std::string Buffer::read_lenght_and_string()
+    std::string NetMessage::read_lenght_and_string()
     {
         assert(readable() >= sizeof(uint32_t));
         uint32_t lenght = 0;
@@ -279,7 +279,7 @@ namespace eddyserver
         return value;
     }
 
-    void Buffer::read_lenght_and_string(std::string *out_value)
+    void NetMessage::read_lenght_and_string(std::string *out_value)
     {
         assert(readable() >= sizeof(uint32_t));
         uint32_t lenght = 0;
@@ -296,7 +296,7 @@ namespace eddyserver
     }
 
     // 写入数据
-    size_t Buffer::write(const void *data, size_t size)
+    size_t NetMessage::write(const void *data, size_t size)
     {
         ensure_writable_bytes(size);
         if (!is_dynmic())
@@ -314,7 +314,7 @@ namespace eddyserver
     }
 
     // 写入字符串
-    void Buffer::write_string(const std::string &value)
+    void NetMessage::write_string(const std::string &value)
     {
         if (!value.empty())
         {
@@ -323,7 +323,7 @@ namespace eddyserver
     }
 
     // 写入长度和字符串
-    void Buffer::write_lenght_and_string(const std::string &value)
+    void NetMessage::write_lenght_and_string(const std::string &value)
     {
         write_pod<uint32_t>(value.size());
         write_string(value);

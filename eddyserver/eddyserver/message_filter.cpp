@@ -1,7 +1,7 @@
 ﻿#include "message_filter.h"
 #include <numeric>
 #include <asio/ip/address_v4.hpp>
-#include "buffer.h"
+#include "net_message.h"
 
 namespace eddyserver
 {
@@ -17,20 +17,20 @@ namespace eddyserver
     }
 
     // 获取欲写入数据大小
-    size_t MessageFilter::bytes_wanna_write(const std::vector<Buffer> &messages_to_be_sent)
+    size_t MessageFilter::bytes_wanna_write(const std::vector<NetMessage> &messages_to_be_sent)
     {
         if (messages_to_be_sent.empty())
         {
             return 0;
         }
-        return std::accumulate(messages_to_be_sent.begin(), messages_to_be_sent.end(), 0, [](size_t sum, const Buffer &message)
+        return std::accumulate(messages_to_be_sent.begin(), messages_to_be_sent.end(), 0, [](size_t sum, const NetMessage &message)
         {
             return sum + MessageFilter::header_size + message.readable();
         });
     }
 
     // 读取数据
-    size_t MessageFilter::read(const ByteArrray &buffer, std::vector<Buffer> &messages_received)
+    size_t MessageFilter::read(const ByteArrray &buffer, std::vector<NetMessage> &messages_received)
     {
         if (!header_read_)
         {
@@ -41,7 +41,7 @@ namespace eddyserver
         }
         else
         {
-            Buffer new_message(header_);
+            NetMessage new_message(header_);
             new_message.write(buffer.data(), header_);
             messages_received.push_back(std::move(new_message));
             header_read_ = false;
@@ -50,14 +50,16 @@ namespace eddyserver
     }
 
     // 写入数据
-    size_t MessageFilter::write(const std::vector<Buffer> &messages_to_be_sent, ByteArrray &buffer)
+    size_t MessageFilter::write(const std::vector<NetMessage> &messages_to_be_sent, ByteArrray &buffer)
     {
         size_t bytes = 0;
         for (size_t i = 0; i < messages_to_be_sent.size(); ++i)
         {
-            const Buffer &message = messages_to_be_sent[i];
+            const NetMessage &message = messages_to_be_sent[i];
             MessageHeader header = htons(static_cast<MessageHeader>(message.readable()));
-            buffer.insert(buffer.end(), reinterpret_cast<const uint8_t*>(&header), reinterpret_cast<const uint8_t*>(&header) + sizeof(MessageHeader));
+            buffer.insert(buffer.end(),
+                reinterpret_cast<const uint8_t*>(&header),
+                reinterpret_cast<const uint8_t*>(&header) + sizeof(MessageHeader));
             buffer.insert(buffer.end(), message.data(), message.data() + message.readable());
             bytes += MessageFilter::header_size + message.readable();
         }

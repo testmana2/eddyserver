@@ -1,5 +1,5 @@
 ﻿#include "tcp_session_handler.h"
-#include "buffer.h"
+#include "net_message.h"
 #include "tcp_session.h"
 #include "io_service_thread.h"
 #include "io_service_thread_manager.h"
@@ -8,7 +8,7 @@ namespace eddyserver
 {
 	namespace session_handler_stuff
 	{
-		typedef std::shared_ptr< std::vector<Buffer> > NetMessageVecPointer;
+		typedef std::shared_ptr< std::vector<NetMessage> > NetMessageVecPointer;
 
         /**
          * 关闭Session
@@ -44,9 +44,10 @@ namespace eddyserver
                 ThreadPointer thread_ptr = session_handle_ptr->get_thread_manager()->get_thread(session_handle_ptr->get_thread_id());
                 if (thread_ptr != nullptr)
                 {
-                    NetMessageVecPointer messages_to_be_sent = std::make_shared< std::vector<Buffer> >();
+                    NetMessageVecPointer messages_to_be_sent = std::make_shared< std::vector<NetMessage> >();
                     *messages_to_be_sent = std::move(session_handle_ptr->messages_to_be_sent());
-                    thread_ptr->post(std::bind(SendMessageListToSession, thread_ptr, session_handle_ptr->get_session_id(), messages_to_be_sent));
+                    thread_ptr->post(std::bind(
+                        SendMessageListToSession, thread_ptr, session_handle_ptr->get_session_id(), messages_to_be_sent));
                 }
 			}
 		}
@@ -110,7 +111,7 @@ namespace eddyserver
 	}
 
     //  发送消息
-	void TCPSessionHandler::send(const Buffer &message)
+	void TCPSessionHandler::send(const NetMessage &message)
 	{
 		if (is_closed())
 		{
@@ -129,11 +130,13 @@ namespace eddyserver
 		{
 			if (thread_id_ == io_thread_manager_->get_main_thread()->get_id())
 			{
-				io_thread_manager_->get_main_thread()->post(std::bind(session_handler_stuff::SendMessageListDirectly, shared_from_this()));
+				io_thread_manager_->get_main_thread()->post(
+                    std::bind(session_handler_stuff::SendMessageListDirectly, shared_from_this()));
 			}
 			else
 			{
-				io_thread_manager_->get_main_thread()->post(std::bind(session_handler_stuff::PackMessageList, shared_from_this()));
+				io_thread_manager_->get_main_thread()->post(
+                    std::bind(session_handler_stuff::PackMessageList, shared_from_this()));
 			}
 		}
 	}

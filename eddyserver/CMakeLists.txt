@@ -3,7 +3,8 @@ set(CURRENT_PROJECT_NAME eddyserver)
 
 # 添加编译列表
 set(CURRENT_PROJECT_SRC_LISTS 
-  eddyserver/buffer.cpp
+  eddyserver/thread_pool.cpp
+  eddyserver/net_message.cpp
   eddyserver/io_service_thread.cpp
   eddyserver/io_service_thread_manager.cpp
   eddyserver/message_filter.cpp

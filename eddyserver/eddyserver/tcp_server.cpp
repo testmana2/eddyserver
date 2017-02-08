@@ -20,8 +20,10 @@ namespace eddyserver
     {
         MessageFilterPointer filter_ptr = message_filter_creator_();
         acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-        SessionPointer session_ptr = std::make_shared<TCPSession>(io_thread_manager_.get_min_load_thread(), filter_ptr, keep_alive_time_);
-        acceptor_.async_accept(session_ptr->get_socket(), std::bind(&TCPServer::handle_accept, this, session_ptr, std::placeholders::_1));
+        SessionPointer session_ptr = std::make_shared<TCPSession>(
+            io_thread_manager_.get_min_load_thread(), filter_ptr, keep_alive_time_);
+        acceptor_.async_accept(session_ptr->get_socket(),
+            std::bind(&TCPServer::handle_accept, this, session_ptr, std::placeholders::_1));
     }
 
     // 处理接受事件
@@ -39,7 +41,9 @@ namespace eddyserver
 
         ThreadPointer td = io_thread_manager_.get_min_load_thread();
         MessageFilterPointer filter_ptr = message_filter_creator_();
-        SessionPointer new_session_ptr = std::make_shared<TCPSession>(td, filter_ptr, keep_alive_time_);
-        acceptor_.async_accept(new_session_ptr->get_socket(), std::bind(&TCPServer::handle_accept, this, new_session_ptr, std::placeholders::_1));
+        SessionPointer new_session_ptr = std::make_shared<TCPSession>(
+            td, filter_ptr, keep_alive_time_);
+        acceptor_.async_accept(new_session_ptr->get_socket(),
+            std::bind(&TCPServer::handle_accept, this, new_session_ptr, std::placeholders::_1));
     }
 }

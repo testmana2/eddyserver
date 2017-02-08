@@ -126,7 +126,11 @@ namespace eddyserver
             throw std::runtime_error("generator session id fail!");
         }
 
-        handler_ptr->init(session_id, session_ptr->get_io_thread()->get_id(), this, session_ptr->get_socket().remote_endpoint());
+        handler_ptr->init(session_id,
+            session_ptr->get_io_thread()->get_id(),
+            this,
+            session_ptr->get_socket().remote_endpoint());
+
         session_handler_map_.insert(std::make_pair(session_id, handler_ptr));
         session_ptr->get_io_thread()->post(std::bind(&TCPSession::init, session_ptr, session_id));
         handler_ptr->on_connect();

@@ -21,7 +21,8 @@ namespace eddyserver
         asio::error_code &error_code)
 	{
 		MessageFilterPointer filter_ptr = message_filter_creator_();
-        SessionPointer session_ptr = std::make_shared<TCPSession>(io_thread_manager_.get_min_load_thread(), filter_ptr);
+        SessionPointer session_ptr = std::make_shared<TCPSession>(
+            io_thread_manager_.get_min_load_thread(), filter_ptr);
 		session_ptr->get_socket().connect(endpoint, error_code);
         handle_connect(session_ptr, error_code);
 	}
@@ -31,7 +32,8 @@ namespace eddyserver
         const std::function<void(asio::error_code)> &cb)
 	{
 		MessageFilterPointer filter_ptr = message_filter_creator_();
-        SessionPointer session_ptr = std::make_shared<TCPSession>(io_thread_manager_.get_min_load_thread(), filter_ptr);
+        SessionPointer session_ptr = std::make_shared<TCPSession>(
+            io_thread_manager_.get_min_load_thread(), filter_ptr);
         session_ptr->get_socket().async_connect(endpoint,
             std::bind(&TCPClient::handle_async_connect, this, session_ptr, cb, std::placeholders::_1));
 	}

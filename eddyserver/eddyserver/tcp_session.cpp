@@ -11,12 +11,14 @@ namespace eddyserver
 {
     namespace session_stuff
     {
-        typedef std::shared_ptr< std::vector<Buffer> > NetMessageVecPointer;
+        typedef std::shared_ptr< std::vector<NetMessage> > NetMessageVecPointer;
 
         /**
          * 发送消息列表到SessionHandler
          */
-        void SendMessageListToHandler(IOServiceThreadManager &manager, TCPSessionID id, NetMessageVecPointer messages_received)
+        void SendMessageListToHandler(IOServiceThreadManager &manager,
+            TCPSessionID id,
+            NetMessageVecPointer messages_received)
         {
             SessionHandlePointer handler_ptr = manager.get_session_handler(id);
             if (handler_ptr != nullptr)
@@ -35,10 +37,14 @@ namespace eddyserver
         {
             if (!session_ptr->get_messages_received().empty())
             {
-                NetMessageVecPointer messages_received = std::make_shared< std::vector<Buffer> >();
+                NetMessageVecPointer messages_received = std::make_shared< std::vector<NetMessage> >();
                 *messages_received = std::move(session_ptr->get_messages_received());
                 session_ptr->get_io_thread()->get_thread_manager().get_main_thread()->post(std::bind(
-                    SendMessageListToHandler, std::ref(session_ptr->get_io_thread()->get_thread_manager()), session_ptr->get_id(), messages_received));
+                    SendMessageListToHandler,
+                    std::ref(session_ptr->get_io_thread()->get_thread_manager()),
+                    session_ptr->get_id(),
+                    messages_received
+                ));
             }
         }
 
@@ -50,7 +56,7 @@ namespace eddyserver
             SessionHandlePointer handler_ptr = session_ptr->get_io_thread()->get_thread_manager().get_session_handler(session_ptr->get_id());
             if (handler_ptr != nullptr)
             {
-                std::vector<Buffer> &messages_received = session_ptr->get_messages_received();
+                std::vector<NetMessage> &messages_received = session_ptr->get_messages_received();
                 for (size_t i = 0; i < messages_received.size(); ++i)
                 {
                     handler_ptr->on_message(messages_received[i]);
@@ -96,7 +102,7 @@ namespace eddyserver
         ++num_read_handlers_;
         if (bytes_wanna_read == MessageFilterInterface::any_bytes())
         {
-            buffer_receiving_.resize(Buffer::kDynamicThreshold);
+            buffer_receiving_.resize(NetMessage::kDynamicThreshold);
             socket_.async_read_some(asio::buffer(buffer_receiving_.data(), buffer_receiving_.size()),
                 std::bind(&TCPSession::handle_read, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
         }
@@ -129,7 +135,7 @@ namespace eddyserver
             }
             io_thread_->get_session_queue().remove(get_id());
 
-            buffer_receiving_.resize(Buffer::kDynamicThreshold);
+            buffer_receiving_.resize(NetMessage::kDynamicThreshold);
             socket_.async_read_some(asio::buffer(buffer_receiving_.data(), buffer_receiving_.size()),
                 std::bind(&TCPSession::handle_safe_close, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 
@@ -167,7 +173,7 @@ namespace eddyserver
     }
 
     // 投递消息列表
-    void TCPSession::post_message_list(const std::vector<Buffer> &messages)
+    void TCPSession::post_message_list(const std::vector<NetMessage> &messages)
     {
         if (closed_ || messages.empty())
         {
@@ -238,7 +244,7 @@ namespace eddyserver
         ++num_read_handlers_;
         if (bytes_wanna_read == MessageFilterInterface::any_bytes())
         {
-            buffer_receiving_.resize(Buffer::kDynamicThreshold);
+            buffer_receiving_.resize(NetMessage::kDynamicThreshold);
             socket_.async_read_some(asio::buffer(&*buffer_receiving_.begin(), buffer_receiving_.size()),
                 std::bind(&TCPSession::handle_read, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
         }
@@ -289,7 +295,7 @@ namespace eddyserver
         }
         else
         {
-            buffer_receiving_.resize(Buffer::kDynamicThreshold);
+            buffer_receiving_.resize(NetMessage::kDynamicThreshold);
             socket_.async_read_some(asio::buffer(buffer_receiving_.data(), buffer_receiving_.size()),
                 std::bind(&TCPSession::handle_safe_close, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
         }

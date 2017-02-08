@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <asio/ip/tcp.hpp>
-#include "buffer.h"
-#include "eddy_types.h"
+#include "eddytypes.h"
+#include "net_message.h"
 
 namespace eddyserver
 {
@@ -16,7 +16,7 @@ namespace eddyserver
 
     public:
         TCPSessionHandler();
-        virtual ~TCPSessionHandler() {};
+        virtual ~TCPSessionHandler() = default;
 
     public:
         /**
@@ -27,7 +27,7 @@ namespace eddyserver
         /**
          * 接收消息事件
          */
-        virtual void on_message(Buffer &message) = 0;
+        virtual void on_message(NetMessage &message) = 0;
 
         /**
          * 关闭事件
@@ -70,7 +70,7 @@ namespace eddyserver
         /**
          * 获取将被发送的消息列表
          */ 
-        std::vector<Buffer>& messages_to_be_sent()
+        std::vector<NetMessage>& messages_to_be_sent()
         {
             return messages_to_be_sent_;
         }
@@ -87,7 +87,7 @@ namespace eddyserver
         /**
          * 发送消息
          */
-        void send(const Buffer &message);
+        void send(const NetMessage &message);
 
         /**
          * 关闭连接
@@ -117,7 +117,7 @@ namespace eddyserver
         IOThreadID              thread_id_;
         asio::ip::tcp::endpoint remote_endpoint_;
         IOServiceThreadManager* io_thread_manager_;
-        std::vector<Buffer>     messages_to_be_sent_;
+        std::vector<NetMessage>     messages_to_be_sent_;
     };
 }
 

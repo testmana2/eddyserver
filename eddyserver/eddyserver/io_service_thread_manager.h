@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "eddy_types.h"
+#include "eddytypes.h"
 #include "id_generator.h"
 
 namespace eddyserver
