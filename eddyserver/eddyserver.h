@@ -12,9 +12,9 @@ namespace eddyserver
     class MessageFilterInterface;
 }
 
-#include "eddyserver/buffer.h"
 #include "eddyserver/tcp_client.h"
 #include "eddyserver/tcp_server.h"
+#include "eddyserver/net_message.h"
 #include "eddyserver/id_generator.h"
 #include "eddyserver/message_filter.h"
 #include "eddyserver/tcp_session_handler.h"
