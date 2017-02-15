@@ -3,9 +3,9 @@
 
 namespace eddyserver
 {
-    class Buffer;
     class TCPClient;
     class TCPServer;
+    class NetMessage;
     class MessageFilter;
     class TCPSessionHandler;
     class IOServiceThreadManager;
