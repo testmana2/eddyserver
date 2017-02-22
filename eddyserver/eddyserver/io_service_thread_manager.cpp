@@ -118,7 +118,7 @@ namespace eddyserver
     }
 
     // Session连接
-    void IOServiceThreadManager::on_session_connect(SessionPointer &session_ptr, SessionHandlePointer &handler_ptr)
+    void IOServiceThreadManager::on_session_connected(SessionPointer &session_ptr, SessionHandlePointer &handler_ptr)
     {
         uint32_t session_id = 0;
         if (!id_generator_.get(session_id))
@@ -133,7 +133,7 @@ namespace eddyserver
 
         session_handler_map_.insert(std::make_pair(session_id, handler_ptr));
         session_ptr->get_io_thread()->post(std::bind(&TCPSession::init, session_ptr, session_id));
-        handler_ptr->on_connect();
+        handler_ptr->on_connected();
 
         IOThreadID tid = handler_ptr->get_thread_id();
         assert(tid > 0 && tid <= thread_load_.size());
@@ -144,7 +144,7 @@ namespace eddyserver
     }
 
     // Session关闭
-    void IOServiceThreadManager::on_session_close(TCPSessionID id)
+    void IOServiceThreadManager::on_session_closed(TCPSessionID id)
     {
         assert(id > 0);
         SessionHandlerMap::iterator found = session_handler_map_.find(id);
@@ -154,7 +154,7 @@ namespace eddyserver
             IOThreadID tid = handler_ptr->get_thread_id();
             if (handler_ptr != nullptr)
             {
-                handler_ptr->on_close();
+                handler_ptr->on_closed();
                 handler_ptr->dispose();
             }
             session_handler_map_.erase(found);

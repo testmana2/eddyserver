@@ -49,7 +49,7 @@ namespace eddyserver
 		}
 
 		SessionHandlePointer handle_ptr = session_handler_creator_();
-		io_thread_manager_.on_session_connect(session_ptr, handle_ptr);
+		io_thread_manager_.on_session_connected(session_ptr, handle_ptr);
 	}
 
     // 异步连接结果

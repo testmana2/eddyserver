@@ -22,7 +22,7 @@ namespace eddyserver
         /**
          * 连接事件
          */
-        virtual void on_connect() = 0;
+        virtual void on_connected() = 0;
 
         /**
          * 接收消息事件
@@ -32,7 +32,7 @@ namespace eddyserver
         /**
          * 关闭事件
          */
-        virtual void on_close() = 0;
+        virtual void on_closed() = 0;
 
     public:
         /**

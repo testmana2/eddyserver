@@ -46,12 +46,12 @@ namespace eddyserver
         /**
          * Session连接
          */
-        void on_session_connect(SessionPointer &session_ptr, SessionHandlePointer &handler);
+        void on_session_connected(SessionPointer &session_ptr, SessionHandlePointer &handler);
 
         /**
          * Session关闭
          */
-        void on_session_close(TCPSessionID id);
+        void on_session_closed(TCPSessionID id);
 
         /**
          * 获取Session数量

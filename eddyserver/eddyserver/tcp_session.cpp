@@ -125,7 +125,7 @@ namespace eddyserver
         if (io_thread_->get_session_queue().get(get_id()) != nullptr)
         {
             io_thread_->get_thread_manager().get_main_thread()->post(
-                std::bind(&IOServiceThreadManager::on_session_close, &io_thread_->get_thread_manager(), get_id()));
+                std::bind(&IOServiceThreadManager::on_session_closed, &io_thread_->get_thread_manager(), get_id()));
 
             asio::error_code error_code;
             socket_.shutdown(asio::ip::tcp::socket::shutdown_send, error_code);
