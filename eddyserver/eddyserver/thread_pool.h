@@ -61,7 +61,6 @@ private:
     ThreadPointer           thread_;
     std::list<Callback>     queue_task_;
     mutable std::mutex      queue_task_mutex_;
-    mutable std::mutex      condition_mutex_;
     std::condition_variable condition_incoming_task_;
 };
 

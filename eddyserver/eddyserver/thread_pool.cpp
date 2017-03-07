@@ -91,16 +91,13 @@ void Thread::run_loop()
 {
     while (!finished_)
     {
-        while (!finished_ && load() == 0)
+        std::unique_lock<std::mutex> lock(queue_task_mutex_);
+        while (queue_task_.empty())
         {
-            std::unique_lock<std::mutex> lock(condition_mutex_);
-            if (lock.mutex())
-            {
-                condition_incoming_task_.wait(lock);
-            }
+            condition_incoming_task_.wait(lock);
         }
 
-        if (!finished_)
+        if (finished_)
         {
             break;
         }
