@@ -7,6 +7,7 @@ namespace eddyserver
     class TCPServer;
     class NetMessage;
     class MessageFilter;
+    class IOServiceThread;
     class TCPSessionHandler;
     class IOServiceThreadManager;
     class MessageFilterInterface;
